@@ -1,0 +1,29 @@
+#include "AudioDac.h"
+#include <Audio.h>
+#include <WiFi.h>
+
+// Deklaracja obiektów Audio
+Audio audio;  // Obiekt audio
+
+// Funkcja konfigurująca audio
+void configureAudio(const char* radioURL) {
+
+  // Ustawienia pinów I2S
+  audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+  
+  // Ustawienie głośności (0-15)
+  audio.setVolume(7);
+
+  // Połączenie z serwisem audio (np. strumieniem radia)
+  audio.connecttohost(radioURL);
+  
+  Serial.println("Audio configured and connected to host.");
+}
+
+
+
+// Funkcja callback wywoływana po zakończeniu pliku MP3
+void audio_eof_mp3(const char *info) {
+    Serial.print("Stream title: ");
+    Serial.println(info);
+}
