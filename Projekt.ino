@@ -4,14 +4,25 @@
 #include "AudioDac.h" 
 #include "RadioTft.h"
 #include "RadioController.h"
+// --- touch irq pin ---------------------------------
+constexpr int TOUCH_IRQ_PIN2 = 36;     // GPIO 0
+volatile bool touchFlag = false;     // set in ISR
+void IRAM_ATTR touchIsr() {          // interrupt routine
+  touchFlag = true;                  // just set a flag, keep it tiny
+}
+
 void setup() {
   Serial.begin(115200);
+  pinMode(TOUCH_IRQ_PIN2, INPUT_PULLUP);          // keep line high at boot
+  attachInterrupt(digitalPinToInterrupt(TOUCH_IRQ_PIN2),
+                  touchIsr, FALLING);
   tft_init();
 
   connectToWiFi();
   
   int lastStation = getLastRadioStationFromFlash();
   if (lastStation != -1) {
+    Serial.println("Odczytano ostatnią stację: " + String(lastStation));
     currentRadioStation = {menuItems[lastStation], "", ""};
     configureAudio(currentRadioStation.item.url.c_str());
   } else {
@@ -19,16 +30,18 @@ void setup() {
     currentRadioStation = {menuItems[0], "", ""};
     configureAudio(menuItems[0].url.c_str());
   }
+  tft_drawHeader(currentRadioStation.item.name);
   
 
   Serial.println("Max volume: "+ audio.maxVolume());
   Serial.println("Max volume: "+ audio.maxVolume());
-  pinMode(14, INPUT_PULLUP);
+
 
 }
 void loop() {
   audio.loop();
-
+  if (!touchFlag) return;
+  touchFlag = false;
   static uint32_t lastTouchCheck = 0;
   static bool wasTouched = false;
   uint16_t touchX, touchY;

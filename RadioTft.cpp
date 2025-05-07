@@ -7,7 +7,7 @@ Preferences prefs;
 menuItem menuItems[3] = {
     {"Juwenalia", "http://158.101.190.156:8000/a55d4ea54bb8159dfec8e7ece1c0fa5c.mp3"},
     {"RMF Maxx", "http://31.192.216.7:8000/rmf_maxxx"},
-    {"357", "http://stream.rcs.revma.com/ye5kghkgcm0uv"},
+    {"Paradise", "http://stream.radioparadise.com/mp3-192"},
 };
 RadioStation currentRadioStation = {{"", ""}, "", ""};
   
@@ -17,7 +17,7 @@ void tft_init() {
   tft.begin();
   tft.setRotation(3);
   tft.fillScreen(TFT_BLACK);
-  tft_drawHeader(menuItems[0].name);
+  
   tft_drawMenu();
   
   // Draw lines to separate sections Header and Song Info
@@ -85,10 +85,11 @@ void tft_initImageShow(String title, String author) {
 }
 
 void tft_clearSongInfo() {
-  tft.fillRect(0, 46, tft.width(), 135, BG_COLOR);
+  tft.fillRect(0, 46, tft.width(), 133, BG_COLOR);
 }
 
 void tft_drawHeader(String name, int x, int y) {
+  tft.fillRect(0, 0, tft.width() - 50, 45, BG_COLOR);
   tft.setTextColor(TEXT_COLOR, BG_COLOR);
   tft.setTextSize(2);
   tft.drawString(name, 10, 10);
@@ -251,7 +252,7 @@ void saveCurrentRadioStationToFlash(int radioStationNumber) {
 
   String key_name = "lastStation";
 
-  prefs.putInt(key_name.c_str(), radioStationNumber);
+  prefs.putString(key_name.c_str(), String(radioStationNumber));
 
   prefs.end();
 }
@@ -259,9 +260,9 @@ int getLastRadioStationFromFlash() {
   prefs.begin("radio", true);
 
   String key_name = "lastStation";
-  int lastStation = prefs.getInt(key_name.c_str(), -1);
+  String lastStation = prefs.getString(key_name.c_str(), "-1");
 
   prefs.end();
 
-  return lastStation;
+  return lastStation.toInt();
 }

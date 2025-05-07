@@ -14,7 +14,7 @@ void configureAudio(const char* radioURL) {
   // Ustawienie głośności (0-15)
   audio.setVolume(7);
 
-  audio.setBufsize(8192, 32768);
+  audio.setBufsize(16384, 65536);
 
 
 
@@ -28,6 +28,5 @@ void configureAudio(const char* radioURL) {
 
 // Funkcja callback wywoływana po zakończeniu pliku MP3
 void audio_eof_mp3(const char *info) {
-    Serial.print("Stream title: ");
-    Serial.println(info);
+
 }
