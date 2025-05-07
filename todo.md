@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] Naprawić długość tekstu na ekranie, albo ograniczyć i zrobić To jest te... albo prócz tego jeszcze bo funkcja drawString zawija ale na końcu ekranu, poszukać trzeba jak zrobić żeby zawijało w połowie ekranu, tam jest dużo w tej bibliotece może jest
+- [x] Naprawić długość tekstu na ekranie, albo ograniczyć i zrobić To jest te... albo prócz tego jeszcze bo funkcja drawString zawija ale na końcu ekranu, poszukać trzeba jak zrobić żeby zawijało w połowie ekranu, tam jest dużo w tej bibliotece może jest
 - [ ] Naprawić wielorazowe wykonywanie się funkcji z callbacku aktualizowania tytułu i zdjęcia
 - [ ] Wizualnie poprawić
 - [ ] Zrobić WebApp do zmiany ulubionych stacji
