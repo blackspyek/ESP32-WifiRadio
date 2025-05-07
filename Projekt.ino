@@ -11,10 +11,38 @@ void setup() {
   connectToWiFi();
   configureAudio(RADIO_URL);
 
-}
+  Serial.println("Max volume: "+ audio.maxVolume());
+  
+  pinMode(14, INPUT_PULLUP);
 
+}
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50; // 50 ms debounce delay
+bool lastButtonState = HIGH;
+bool buttonState;
 void loop() {
   audio.loop();
+  
+  // int reading = digitalRead(14);
+
+  // if (reading != lastButtonState) {
+  //   lastDebounceTime = millis(); // reset debounce timer
+  // }
+
+  // if ((millis() - lastDebounceTime) > debounceDelay) {
+  //   // stable state
+  //   if (reading != buttonState) {
+  //     buttonState = reading;
+
+  //     if (buttonState == LOW) {
+  //       Serial.println("Przycisk wcisniety");
+
+  //       tft_burgerClicked();
+  //     }
+  //   }
+  // }
+
+  // lastButtonState = reading;
 }
 
 // Funkcja callback wyświetlająca info o audio
@@ -47,7 +75,13 @@ void audio_info(const char *info) {
         author = fullTitle.substring(0, sepIndex);
         title = fullTitle.substring(sepIndex + 3);
       }
-      updateSong(title, author);
+      currentRadioStation.title = title;
+      currentRadioStation.author = author;
+
+      Serial.println("Ustawiono Title: " + currentRadioStation.title);
+      Serial.println("Ustawiono Author: " + currentRadioStation.author);
+      if (!isMenuOpen)
+        updateSong(title, author);
     }
   }
 }

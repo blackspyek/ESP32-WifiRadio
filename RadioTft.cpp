@@ -3,12 +3,20 @@
 #include <WiFi.h>
 
 TFT_eSPI tft = TFT_eSPI(); 
-
+Preferences prefs;
+menuItem menuItems[3] = {
+    {"Juwenalia", "http://158.101.190.156:8000/a55d4ea54bb8159dfec8e7ece1c0fa5c.mp3"},
+    {"RMF Maxx", "http://31.192.216.7:8000/rmf_maxxx"},
+    {"357", "http://stream.rcs.revma.com/ye5kghkgcm0uv"},
+};
+RadioStation currentRadioStation = {"", "", ""};
+bool isMenuOpen = false;
 void tft_init() {
+  loadRadiosFromFlash();
   tft.begin();
   tft.setRotation(3);
   tft.fillScreen(TFT_BLACK);
-  tft_drawHeader("Eska Warszawa");
+  tft_drawHeader(menuItems[0].name);
   tft_drawMenu();
   
   // Draw lines to separate sections Header and Song Info
@@ -19,12 +27,14 @@ void tft_init() {
 }
 
 void tft_printTitle(String title) {
+  tft.setTextColor(TEXT_COLOR, BG_COLOR); 
   tft.setTextSize(2);
   tft.setCursor(15, 60, 1);
   tft.print(title);
 }
 
 void tft_printAuthor(String author) {
+  tft.setTextColor(TEXT_COLOR, BG_COLOR); 
   tft.setTextSize(1);
   tft.setCursor(15, 120, 1);
   tft.print(author);
@@ -37,7 +47,7 @@ void tft_initImageShow(String title, String author) {
 }
 
 void tft_clearSongInfo() {
-  tft.fillRect(0, 46, tft.width() / 2, 120, BG_COLOR);
+  tft.fillRect(0, 46, tft.width(), 135, BG_COLOR);
 }
 
 void tft_drawHeader(String name, int x, int y) {
@@ -57,6 +67,28 @@ void updateSong(String title, String author) {
   tft_printTitle(title);
   tft_printAuthor(author);
   tft_initImageShow(title, author);
+}
+void tft_printCurrentSongInfo() {
+  tft_clearSongInfo();
+  tft_initImageShow(currentRadioStation.title, currentRadioStation.author);
+  tft_printTitle(currentRadioStation.title);
+  tft_printAuthor(currentRadioStation.author);
+}
+void tft_OpenMenu() {
+  isMenuOpen = true;
+  tft_drawMenuScreen();
+}
+void tft_CloseMenu() {
+  isMenuOpen = false;
+  tft_clearSongInfo();
+  tft_printCurrentSongInfo();
+}
+void tft_burgerClicked() {
+  if (isMenuOpen) {
+    tft_CloseMenu();
+  } else {
+    tft_OpenMenu();
+  }
 }
 
 // Read one byte with retries
@@ -104,9 +136,73 @@ void showRawRGB888ImageFromURL(const char* url) {
     
     Serial.println("Image displayed successfully");
   } else {
+    //TODO default image
     Serial.print("HTTP error: ");
     Serial.println(httpCode);
   }
 
   http.end();
+}
+
+void tft_drawMenuScreen() {
+  isMenuOpen = true;
+
+  tft_clearSongInfo();
+
+  const int numItems = 3;
+  const int spacing = 4; // space between boxes
+  int availableWidth = tft.width() - (spacing * (numItems - 1));
+  int rectWidth = availableWidth / numItems;
+  int rectHeight = 30; // fixed height
+  int rectY = (tft.height() - rectHeight) / 2; // center vertically
+
+  for (int i = 0; i < numItems; i++) {
+    int rectX = i * (rectWidth + spacing);
+
+    // Draw rectangle
+    tft.fillRect(rectX, rectY, rectWidth, rectHeight, TEXT_COLOR);
+
+    // Center text in box
+    tft.setTextSize(1);
+    int textW = tft.textWidth(menuItems[i].name);
+    int textH = tft.fontHeight();
+    int textX = rectX + (rectWidth - textW) / 2;
+    int textY = rectY + (rectHeight - textH) / 2;
+
+    tft.setTextColor(BG_COLOR); // invert for contrast
+    tft.setCursor(textX, textY);
+    tft.print(menuItems[i].name);
+  }
+}
+
+
+void saveRadioURL(int radioStationNumber, const String& name, const String& url) {
+  prefs.begin("radio", false);
+
+  String key_name = "station" + String(radioStationNumber) + "_name";
+  String key_url  = "station" + String(radioStationNumber) + "_url";
+
+  prefs.putString(key_name.c_str(), name);
+  prefs.putString(key_url.c_str(), url);
+
+  prefs.end();
+}
+
+void loadRadiosFromFlash() {
+  prefs.begin("radio", true);
+
+  for (int i = 0; i < 3; i++) {
+    String key_name = "station" + String(i) + "_name";
+    String key_url  = "station" + String(i) + "_url";
+
+    String name = prefs.getString(key_name.c_str(), "");
+    String url  = prefs.getString(key_url.c_str(), "");
+
+    if (name != "" && url != "") {
+      menuItems[i].name = name;
+      menuItems[i].url = url;
+    }
+  }
+
+  prefs.end();
 }
