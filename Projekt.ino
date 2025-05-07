@@ -3,46 +3,74 @@
 #include "WifiConfig.h"
 #include "AudioDac.h" 
 #include "RadioTft.h"
-
+#include "RadioController.h"
 void setup() {
   Serial.begin(115200);
   tft_init();
 
   connectToWiFi();
-  configureAudio(RADIO_URL);
+  
+  int lastStation = getLastRadioStationFromFlash();
+  if (lastStation != -1) {
+    currentRadioStation = {menuItems[lastStation], "", ""};
+    configureAudio(currentRadioStation.item.url.c_str());
+  } else {
+    saveCurrentRadioStationToFlash(0);
+    currentRadioStation = {menuItems[0], "", ""};
+    configureAudio(menuItems[0].url.c_str());
+  }
+  
 
   Serial.println("Max volume: "+ audio.maxVolume());
-  
+  Serial.println("Max volume: "+ audio.maxVolume());
   pinMode(14, INPUT_PULLUP);
 
 }
-unsigned long lastDebounceTime = 0;
-const unsigned long debounceDelay = 50; // 50 ms debounce delay
-bool lastButtonState = HIGH;
-bool buttonState;
 void loop() {
   audio.loop();
-  
-  // int reading = digitalRead(14);
 
-  // if (reading != lastButtonState) {
-  //   lastDebounceTime = millis(); // reset debounce timer
-  // }
+  static uint32_t lastTouchCheck = 0;
+  static bool wasTouched = false;
+  uint16_t touchX, touchY;
 
-  // if ((millis() - lastDebounceTime) > debounceDelay) {
-  //   // stable state
-  //   if (reading != buttonState) {
-  //     buttonState = reading;
+  if (millis() - lastTouchCheck > 50) {
+    lastTouchCheck = millis();
 
-  //     if (buttonState == LOW) {
-  //       Serial.println("Przycisk wcisniety");
+    if (tft.getTouch(&touchX, &touchY)) {
+      if (!wasTouched) {
+        wasTouched = true;
+        Serial.printf("Touch detected at X=%u, Y=%u\n", touchX, touchY);
 
-  //       tft_burgerClicked();
-  //     }
-  //   }
-  // }
+        // 1) Hard-coded burger button in the corner
+        if (touchX >= 285 && touchX <= 325 &&
+            touchY >= 185 && touchY <= 235) {
+          Serial.println("Burger touched!");
+          tft_burgerClicked();
+        }
+        // 2) Otherwise, if menu is open, hit-test the boxes
+        else if (isMenuOpen) {
+          const int numItems = 3;
+          const int spacing  = 4;
+          int availableWidth = tft.width() - spacing * (numItems - 1);
+          int rectWidth      = availableWidth / numItems;
+          int rectHeight     = 30;
+          int rectY          = (tft.height() - rectHeight) / 2;
 
-  // lastButtonState = reading;
+          for (int i = 0; i < numItems; i++) {
+            int rectX = i * (rectWidth + spacing);
+            if (touchX >= rectX && touchX <  rectX + rectWidth &&
+                touchY >= rectY && touchY <  rectY + rectHeight) {
+              Serial.printf("Menu item %d touched\n", i);
+              changeRadioStation(i);
+              break;
+            }
+          }
+        }
+      }
+    } else {
+      wasTouched = false;  // reset on release
+    }
+  }
 }
 
 // Funkcja callback wyświetlająca info o audio

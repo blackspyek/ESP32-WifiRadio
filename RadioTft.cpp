@@ -1,7 +1,7 @@
 #include <RadioTft.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
-
+#include "AudioDac.h"
 TFT_eSPI tft = TFT_eSPI(); 
 Preferences prefs;
 menuItem menuItems[3] = {
@@ -9,7 +9,8 @@ menuItem menuItems[3] = {
     {"RMF Maxx", "http://31.192.216.7:8000/rmf_maxxx"},
     {"357", "http://stream.rcs.revma.com/ye5kghkgcm0uv"},
 };
-RadioStation currentRadioStation = {"", "", ""};
+RadioStation currentRadioStation = {{"", ""}, "", ""};
+  
 bool isMenuOpen = false;
 void tft_init() {
   loadRadiosFromFlash();
@@ -26,18 +27,55 @@ void tft_init() {
   tft.drawLine(10, 180, tft.width() - 10, 180, TEXT_COLOR);
 }
 
-void tft_printTitle(String title) {
+void tft_printWrapped(const String &text, int x, int y, uint8_t textSize) {
   tft.setTextColor(TEXT_COLOR, BG_COLOR); 
-  tft.setTextSize(2);
-  tft.setCursor(15, 60, 1);
-  tft.print(title);
+  tft.setTextSize(textSize);
+
+  const int charW    = 6  * textSize;     // default font cell width
+  const int charH    = 8  * textSize;     // default font cell height
+  const int maxWidth = tft.width() / 2;   // wrap at half screen
+
+  int cursorY = y;
+  String line = "";
+
+  int idx = 0;
+  while (idx < text.length()) {
+    int nextSpace = text.indexOf(' ', idx);
+    if (nextSpace < 0) nextSpace = text.length();
+    String word = text.substring(idx, nextSpace);
+
+    // measure if adding this word would overflow
+    int testLen = (line.length() + (line.length() ? 1 : 0) + word.length()) * charW;
+    if (testLen <= maxWidth) {
+      // fits on current line
+      if (line.length()) line += " ";
+      line += word;
+    } else {
+      // flush current line, start new one
+      tft.setCursor(x, cursorY);
+      tft.print(line);
+      cursorY += charH;
+      line = word;
+    }
+
+    idx = nextSpace + 1;
+  }
+
+  // print whatever’s left
+  if (line.length()) {
+    tft.setCursor(x, cursorY);
+    tft.print(line);
+  }
+}
+
+// now your two functions become trivial:
+
+void tft_printTitle(String title) {
+  tft_printWrapped(title, 15, 60, 2);
 }
 
 void tft_printAuthor(String author) {
-  tft.setTextColor(TEXT_COLOR, BG_COLOR); 
-  tft.setTextSize(1);
-  tft.setCursor(15, 120, 1);
-  tft.print(author);
+  tft_printWrapped(author, 15, 120, 1);
 }
 void tft_initImageShow(String title, String author) {
   title.replace(" ", "%20");
@@ -51,7 +89,7 @@ void tft_clearSongInfo() {
 }
 
 void tft_drawHeader(String name, int x, int y) {
-  tft.setTextColor(TEXT_COLOR);
+  tft.setTextColor(TEXT_COLOR, BG_COLOR);
   tft.setTextSize(2);
   tft.drawString(name, 10, 10);
 }
@@ -77,6 +115,7 @@ void tft_printCurrentSongInfo() {
 void tft_OpenMenu() {
   isMenuOpen = true;
   tft_drawMenuScreen();
+
 }
 void tft_CloseMenu() {
   isMenuOpen = false;
@@ -205,4 +244,24 @@ void loadRadiosFromFlash() {
   }
 
   prefs.end();
+}
+
+void saveCurrentRadioStationToFlash(int radioStationNumber) {
+  prefs.begin("radio", false);
+
+  String key_name = "lastStation";
+
+  prefs.putInt(key_name.c_str(), radioStationNumber);
+
+  prefs.end();
+}
+int getLastRadioStationFromFlash() {
+  prefs.begin("radio", true);
+
+  String key_name = "lastStation";
+  int lastStation = prefs.getInt(key_name.c_str(), -1);
+
+  prefs.end();
+
+  return lastStation;
 }

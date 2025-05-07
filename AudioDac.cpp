@@ -14,6 +14,10 @@ void configureAudio(const char* radioURL) {
   // Ustawienie głośności (0-15)
   audio.setVolume(7);
 
+  audio.setBufsize(8192, 32768);
+
+
+
   // Połączenie z serwisem audio (np. strumieniem radia)
   audio.connecttohost(radioURL);
   

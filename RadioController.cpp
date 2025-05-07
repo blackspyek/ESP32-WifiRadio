@@ -12,9 +12,11 @@ void changeRadioStation(int stationNumber)
     String url = menuItems[stationNumber].url;
     Serial.print("Changing radio station to: ");
     Serial.println(url);
-    currentRadioStation.name = menuItems[stationNumber].name;
+    currentRadioStation.item = menuItems[stationNumber];
+    saveCurrentRadioStationToFlash(stationNumber);
     
-    configureAudio(url.c_str());
+    audio.stopSong();
+    audio.connecttohost(url.c_str());
     
     tft_drawHeader(menuItems[stationNumber].name);
 }
