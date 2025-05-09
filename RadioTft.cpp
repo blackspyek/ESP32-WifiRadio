@@ -1,4 +1,4 @@
-#include <RadioTft.h>
+#include "RadioTft.h"
 #include <HTTPClient.h>
 #include <WiFi.h>
 #include "AudioDac.h"
@@ -6,7 +6,7 @@ TFT_eSPI tft = TFT_eSPI();
 Preferences prefs;
 menuItem menuItems[3] = {
     {"Juwenalia", "http://158.101.190.156:8000/a55d4ea54bb8159dfec8e7ece1c0fa5c.mp3"},
-    {"RMF Maxx", "http://31.192.216.7:8000/rmf_maxxx"},
+    {"RMF Maxx", "https://rs201-krk.rmfstream.pl/rmf_maxxx"},
     {"Paradise", "http://stream.radioparadise.com/mp3-192"},
 };
 RadioStation currentRadioStation = {{"", ""}, "", ""};

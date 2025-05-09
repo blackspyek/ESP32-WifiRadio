@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="420dbdbe-3168-420e-bb25-e515f90fc8d0" name="Changes" comment="Added temp functionality">
+      <change beforePath="$PROJECT_DIR$/AudioDac.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/AudioDac.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioDac.h" beforeDir="false" afterPath="$PROJECT_DIR$/AudioDac.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Projekt.ino" beforeDir="false" afterPath="$PROJECT_DIR$/Projekt.ino" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RadioController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/RadioController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RadioController.h" beforeDir="false" afterPath="$PROJECT_DIR$/RadioController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RadioTft.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/RadioTft.cpp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "wyntia"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/blackspyek/ESP32-WifiRadio.git",
+    "accountId": "c9293c5f-8991-4cd8-97ef-c7548b12b12f"
+  },
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
+    },
+    "owner": "blackspyek",
+    "repository": "ESP32-WifiRadio"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="2wp83r5afrGSood3sGK3mffImbz" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "git-widget-placeholder": "#1 on Feat--Temp",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/gosia/Desktop/studia/II stopien/I sem/IoT/Projekt"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="420dbdbe-3168-420e-bb25-e515f90fc8d0" name="Changes" comment="" />
+      <created>1746726968743</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746726968743</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Added temp functionality">
+      <option name="closed" value="true" />
+      <created>1746729161732</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1746729161732</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added temp functionality" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added temp functionality" />
+  </component>
+</project>

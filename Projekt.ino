@@ -5,7 +5,7 @@
 #include "RadioTft.h"
 #include "RadioController.h"
 // --- touch irq pin ---------------------------------
-constexpr int TOUCH_IRQ_PIN2 = 36;     // GPIO 0
+constexpr int TOUCH_IRQ_PIN2 = 35;     // GPIO 0
 volatile bool touchFlag = false;     // set in ISR
 void IRAM_ATTR touchIsr() {          // interrupt routine
   touchFlag = true;                  // just set a flag, keep it tiny
@@ -13,6 +13,8 @@ void IRAM_ATTR touchIsr() {          // interrupt routine
 
 void setup() {
   Serial.begin(115200);
+
+  delay(300);
   pinMode(TOUCH_IRQ_PIN2, INPUT_PULLUP);          // keep line high at boot
   attachInterrupt(digitalPinToInterrupt(TOUCH_IRQ_PIN2),
                   touchIsr, FALLING);
@@ -34,8 +36,6 @@ void setup() {
   
 
   Serial.println("Max volume: "+ audio.maxVolume());
-  Serial.println("Max volume: "+ audio.maxVolume());
-
 
 }
 void loop() {

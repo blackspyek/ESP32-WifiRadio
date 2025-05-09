@@ -4,7 +4,6 @@
 #include <Audio.h>
 #include <WiFi.h>
 #include <Arduino.h>
-#include "Secrets.h"
 
 // Zdefiniuj piny I2S
 #define I2S_BCLK      26  // Bit clock
