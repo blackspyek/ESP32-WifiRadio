@@ -16,8 +16,6 @@ void configureAudio(const char* radioURL) {
 
   audio.setBufsize(16384, 65536);
 
-
-
   // Połączenie z serwisem audio (np. strumieniem radia)
   audio.connecttohost(radioURL);
   

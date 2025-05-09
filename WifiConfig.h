@@ -2,20 +2,51 @@
 #define WIFICONFIG_H
 #include <Arduino.h>
 #include <WiFi.h>
-#include "Secrets.h" 
+//#include "Secrets.h" 
+#include <WiFiManager.h>
+#include <Preferences.h>
 
-// Funkcja do połączenia z WiFi
+#define CONFIG_PIN   0               
+#define PORTAL_SSID  "ESP32-RadioCfg"
+#define PORTAL_PASS  "12345678"      
+
+
+extern Preferences prefs;
+
 void connectToWiFi() {
-  // Rozpoczynamy połączenie z WiFi
-  WiFi.begin(SSID, WIFI_PASSWORD);
-
-  // Czekamy, aż połączenie będzie nawiązane
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
+  Serial.println(F("📡 Inicjalizacja WiFi..."));
   
-  Serial.println("\nWiFi connected");
+  pinMode(CONFIG_PIN, INPUT_PULLUP);
+  WiFi.mode(WIFI_STA);              // start od trybu STA (bez zbędnego AP)
+
+  WiFiManager wm;
+
+  // Factory reset, jeśli użytkownik przytrzyma GPIO0 podczas resetu
+  if (digitalRead(CONFIG_PIN) == LOW) {
+    Serial.println(F("👉 Factory reset Wi-Fi credentials"));
+    wm.resetSettings();             // czyści NVS
+  }
+
+  wm.setConfigPortalTimeout(120);   // portal gaśnie po 2 min braku aktywności
+
+  Serial.println(F("📡 Łączenie... (portal, jeśli brak kredencji)"));
+  bool ok = wm.autoConnect(PORTAL_SSID, PORTAL_PASS);
+
+  if (!ok) {
+    Serial.println(F("❌ Provisioning nieudane / timeout – restart"));
+    delay(2000);
+    ESP.restart();
+  }
+
+  // ---------- SPRZĄTANIE ----------
+  wm.stopWebPortal();               // gasi HTTP + DNS (WiFiManager ≥2.0)
+  WiFi.softAPdisconnect(true);      // wyłącza SoftAP i zwalnia ~10 kB heapu
+  WiFi.mode(WIFI_STA);              // pewność, że jesteśmy tylko STA
+
+  Serial.printf("✅ Wi-Fi OK: %s  IP: %s\n",
+                WiFi.SSID().c_str(),
+                WiFi.localIP().toString().c_str());
 }
+
 
 #endif
