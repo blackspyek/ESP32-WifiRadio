@@ -4,6 +4,8 @@
 #include "AudioDac.h" 
 #include "RadioTft.h"
 #include "RadioController.h"
+#include "VolumeControl.h"
+
 // --- touch irq pin ---------------------------------
 constexpr int TOUCH_IRQ_PIN2 = 35;     // GPIO 0
 volatile bool touchFlag = false;     // set in ISR
@@ -19,6 +21,9 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(TOUCH_IRQ_PIN2),
                   touchIsr, FALLING);
   tft_init();
+
+  initVolumeControl();
+  startVolumeMonitoring();
 
   connectToWiFi();
   
@@ -36,6 +41,8 @@ void setup() {
   
 
   Serial.println("Max volume: "+ audio.maxVolume());
+  displayVolumePercentage(50);
+  setVolume(MAX_VOLUME / 2); //na 50% na początek
 
 }
 void loop() {
