@@ -4,6 +4,7 @@
 #include "AudioDac.h" 
 #include "RadioTft.h"
 #include "RadioController.h"
+#include "TemperatureSensor.h"
 // --- touch irq pin ---------------------------------
 constexpr int TOUCH_IRQ_PIN2 = 35;     // GPIO 0
 volatile bool touchFlag = false;     // set in ISR
@@ -19,7 +20,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(TOUCH_IRQ_PIN2),
                   touchIsr, FALLING);
   tft_init();
-
+  startTemperatureMonitoring();
   connectToWiFi();
   
   int lastStation = getLastRadioStationFromFlash();
