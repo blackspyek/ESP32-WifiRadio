@@ -66,3 +66,14 @@ Install the following libraries via the Arduino Library Manager or their respect
 Below is an example of how the hardware should be connected:
 
 ![Hardware Setup Example](https://github.com/blackspyek/ESP32-WifiRadio/blob/main/circuit_image.png)
+
+### 📸 Working Radio Example
+
+Below are pictures showcasing the fully functional ESP32 WiFi Radio project:
+
+![Working Radio Example - Not Connected to Wifi View](https://github.com/blackspyek/ESP32-WifiRadio/blob/main/NotConnected.jpg)
+
+![Working Radio Example - Connected to Wifi View](https://github.com/blackspyek/ESP32-WifiRadio/blob/main/Connected.jpg)
+
+![Working Radio Example - Choosing Radio Station View](https://github.com/blackspyek/ESP32-WifiRadio/blob/main/RadioStations.jpg)
+
