@@ -65,4 +65,4 @@ Install the following libraries via the Arduino Library Manager or their respect
 
 Below is an example of how the hardware should be connected:
 
-![Hardware Setup Example](https://github.com/user-attachments/assets/example-hardware-setup.png)
+![Hardware Setup Example](https://github.com/blackspyek/ESP32-WifiRadio/blob/main/circuit_image.png)
