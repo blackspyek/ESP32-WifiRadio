@@ -1,7 +1,9 @@
 #include <Arduino.h>
+#include "RadioController.h"
 #include "RadioTft.h"
 #include "AudioDac.h"
 
+int currVolume = 2;
 void changeRadioStation(int stationNumber)
 {
     if (stationNumber < 0 || stationNumber >= sizeof(menuItems) / sizeof(menuItems[0])) {
@@ -24,12 +26,38 @@ void changeRadioStation(int stationNumber)
 
 void changeVolume(int volume)
 {
-    if (volume < 0 || volume > 100) {
-        Serial.println("Invalid volume level");
+    if (volume < 0 || volume > 10) {
         return;
     }
-    
+    currVolume = volume;
+    tft_displayVolume(volume);
     audio.setVolume(volume);
-    Serial.print("Volume set to: ");
-    Serial.println(volume);
+    saveCurrentVolumeToFlash(volume);
+}
+void volume_up()
+{
+    if (currVolume < 10) {
+        currVolume++;
+        changeVolume(currVolume);
+    }
+}
+void volume_down()
+{
+    if (currVolume > 0) {
+        currVolume--;
+        changeVolume(currVolume);
+    }
+}
+void saveCurrentVolumeToFlash(int volume)
+{
+    prefs.begin("radio", false);
+    prefs.putInt("volume", volume);
+    prefs.end();
+}
+int getLastVolumeFromFlash()
+{
+    prefs.begin("radio", true);
+    int volume = prefs.getInt("volume", 2);
+    prefs.end();
+    return volume;
 }

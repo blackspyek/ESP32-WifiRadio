@@ -1,18 +1,19 @@
 #include "AudioDac.h"
 #include <Audio.h>
 #include <WiFi.h>
+#include "RadioController.h"
 
 // Deklaracja obiektów Audio
 Audio audio;  // Obiekt audio
 
 // Funkcja konfigurująca audio
-void configureAudio(const char* radioURL) {
+void configureAudio(const char* radioURL, int volume) {
 
   // Ustawienia pinów I2S
   audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-  
+  audio.setVolumeSteps(21); 
   // Ustawienie głośności (0-15)
-  audio.setVolume(7);
+  audio.setVolume(volume);
 
   audio.setBufsize(16384, 65536);
 

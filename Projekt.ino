@@ -4,13 +4,58 @@
 #include "AudioDac.h" 
 #include "RadioTft.h"
 #include "RadioController.h"
+#include "StationServer.h"
+
 // --- touch irq pin ---------------------------------
 constexpr int TOUCH_IRQ_PIN2 = 35;     // GPIO 0
+
+
 volatile bool touchFlag = false;     // set in ISR
 void IRAM_ATTR touchIsr() {          // interrupt routine
   touchFlag = true;                  // just set a flag, keep it tiny
 }
+void audioTask(void *param) {
+  while (true) {
+      audio.loop();
+      vTaskDelay(1 / portTICK_PERIOD_MS); 
+  }
+}
 
+QueueHandle_t songInfoQueue;
+
+struct SongInfo {
+  char title[128];
+  char author[128];
+};
+void songUpdateTask(void *param) {
+  SongInfo info;
+  while (true) {
+    if (xQueueReceive(songInfoQueue, &info, portMAX_DELAY)) {
+      currentRadioStation.title = String(info.title);
+      currentRadioStation.author = String(info.author);
+
+      if (!isMenuOpen)
+        updateSong(currentRadioStation.title, currentRadioStation.author);
+    }
+  }
+}
+
+void httpServerTask(void *param) {
+  WiFiServer *server = static_cast<WiFiServer *>(param);
+
+  while (true) {
+    WiFiClient client = server->accept();
+    if (client) {
+      while (client.connected()) {
+        if (client.available()) {
+          handleRequest(client); // Twoja funkcja do obsługi HTTP
+          break;
+        }
+      }
+    }
+    vTaskDelay(10 / portTICK_PERIOD_MS); // mały oddech
+  }
+}
 void setup() {
   Serial.begin(115200);
 
@@ -23,23 +68,27 @@ void setup() {
   connectToWiFi();
   
   int lastStation = getLastRadioStationFromFlash();
+  int lastVolume = getLastVolumeFromFlash();
+  currVolume = lastVolume;
   if (lastStation != -1) {
     Serial.println("Odczytano ostatnią stację: " + String(lastStation));
     currentRadioStation = {menuItems[lastStation], "", ""};
-    configureAudio(currentRadioStation.item.url.c_str());
+    configureAudio(currentRadioStation.item.url.c_str(), lastVolume);
   } else {
     saveCurrentRadioStationToFlash(0);
     currentRadioStation = {menuItems[0], "", ""};
-    configureAudio(menuItems[0].url.c_str());
+    configureAudio(menuItems[0].url.c_str(), lastVolume);
   }
   tft_drawHeader(currentRadioStation.item.name);
   
 
-  Serial.println("Max volume: "+ audio.maxVolume());
-
+  server.begin();
+  xTaskCreatePinnedToCore(httpServerTask, "HTTPTask", 4096, &server, 1, NULL, 1);
+  xTaskCreatePinnedToCore(audioTask, "AudioTask", 4096, NULL, 3, NULL, 1);
+  songInfoQueue = xQueueCreate(5, sizeof(SongInfo));
+  xTaskCreatePinnedToCore(songUpdateTask, "SongUpdate", 12288, NULL, 1, NULL, 1);
 }
 void loop() {
-  audio.loop();
   if (!touchFlag) return;
   touchFlag = false;
   static uint32_t lastTouchCheck = 0;
@@ -59,6 +108,15 @@ void loop() {
             touchY >= 185 && touchY <= 235) {
           Serial.println("Burger touched!");
           tft_burgerClicked();
+        }
+        else if (touchX >= 5 && touchX <= 50 &&
+          touchY >= 0 && touchY <= 60) {
+          volume_down();
+        }
+        // 3) Plus
+        else if (touchX >= 70 && touchX <= 120 &&
+                  touchY >= 0 && touchY <= 60) {
+                    volume_up();
         }
         // 2) Otherwise, if menu is open, hit-test the boxes
         else if (isMenuOpen) {
@@ -88,25 +146,21 @@ void loop() {
 
 // Funkcja callback wyświetlająca info o audio
 void audio_info(const char *info) {
-  Serial.print("Info: ");
-  Serial.println(info);
-
   const char *prefix = "StreamTitle='";
   const char *start = strstr(info, prefix);
 
-
   if (start) {
-    start += strlen(prefix); // Move past the "StreamTitle='"
-    const char *end = strchr(start, '\''); // Find closing quote
+    start += strlen(prefix);
+    const char *end = strchr(start, '\'');
+
     if (end) {
       int len = end - start;
       char streamTitle[128];
       strncpy(streamTitle, start, len);
-      streamTitle[len] = '\0'; // Null terminate
+      streamTitle[len] = '\0';
 
-      // Convert to String for easier handling
       String fullTitle = String(streamTitle);
-      fullTitle.trim(); // Remove any accidental whitespace
+      fullTitle.trim();
 
       String author = "Unknown";
       String title = fullTitle;
@@ -116,13 +170,14 @@ void audio_info(const char *info) {
         author = fullTitle.substring(0, sepIndex);
         title = fullTitle.substring(sepIndex + 3);
       }
-      currentRadioStation.title = title;
-      currentRadioStation.author = author;
 
-      Serial.println("Ustawiono Title: " + currentRadioStation.title);
-      Serial.println("Ustawiono Author: " + currentRadioStation.author);
-      if (!isMenuOpen)
-        updateSong(title, author);
+      SongInfo infoToSend;
+      strncpy(infoToSend.title, title.c_str(), sizeof(infoToSend.title));
+      strncpy(infoToSend.author, author.c_str(), sizeof(infoToSend.author));
+      infoToSend.title[sizeof(infoToSend.title) - 1] = '\0';
+      infoToSend.author[sizeof(infoToSend.author) - 1] = '\0';
+
+      xQueueSend(songInfoQueue, &infoToSend, 0);  // nie blokuj callbacka
     }
   }
 }

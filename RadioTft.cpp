@@ -2,6 +2,7 @@
 #include <HTTPClient.h>
 #include <WiFi.h>
 #include "AudioDac.h"
+#include "RadioController.h"
 TFT_eSPI tft = TFT_eSPI(); 
 Preferences prefs;
 menuItem menuItems[3] = {
@@ -25,6 +26,10 @@ void tft_init() {
 
   // Draw lines to separate sections Song Info and Footer
   tft.drawLine(10, 180, tft.width() - 10, 180, TEXT_COLOR);
+
+  tft_drawMinus(5, 205);  
+  tft_drawPlus(60, 205);
+  tft_displayVolume(getLastVolumeFromFlash());
 }
 
 void tft_printWrapped(const String &text, int x, int y, uint8_t textSize) {
@@ -183,7 +188,9 @@ void showRawRGB888ImageFromURL(const char* url) {
 
   http.end();
 }
-
+void tft_clearBurger() {
+  tft.fillRect(tft.width() - 40, 15, 30, 30, BG_COLOR);
+}
 void tft_drawMenuScreen() {
   isMenuOpen = true;
 
@@ -216,17 +223,7 @@ void tft_drawMenuScreen() {
 }
 
 
-void saveRadioURL(int radioStationNumber, const String& name, const String& url) {
-  prefs.begin("radio", false);
 
-  String key_name = "station" + String(radioStationNumber) + "_name";
-  String key_url  = "station" + String(radioStationNumber) + "_url";
-
-  prefs.putString(key_name.c_str(), name);
-  prefs.putString(key_url.c_str(), url);
-
-  prefs.end();
-}
 
 void loadRadiosFromFlash() {
   prefs.begin("radio", true);
@@ -265,4 +262,32 @@ int getLastRadioStationFromFlash() {
   prefs.end();
 
   return lastStation.toInt();
+}
+
+
+void tft_displayVolume(int volume) {
+  tft.fillRect(42, 210, 24, 16, BG_COLOR);
+
+  tft.setTextColor(TEXT_COLOR, BG_COLOR);
+  tft.setTextSize(2);
+  
+  tft.drawString(String(volume), 40, 210);
+}
+
+static const int BTN_SIZE    = 25;    
+static const int TXT_OFFSET  = 9;     
+static const int V_OFFSET    = 2;    
+
+void tft_drawMinus(int x, int y) {
+  tft.fillRect(x, y, BTN_SIZE, BTN_SIZE, BG_COLOR);
+  tft.setTextColor(TEXT_COLOR, BG_COLOR);
+  tft.setTextSize(3);
+  tft.drawString("-", x + TXT_OFFSET, y + V_OFFSET);
+}
+
+void tft_drawPlus(int x, int y) {
+  tft.fillRect(x, y, BTN_SIZE, BTN_SIZE, BG_COLOR);
+  tft.setTextColor(TEXT_COLOR, BG_COLOR);
+  tft.setTextSize(3);
+  tft.drawString("+", x + TXT_OFFSET, y + V_OFFSET);
 }

@@ -14,7 +14,7 @@
 extern Audio audio;  // Obiekt audio
 
 // Funkcje konfigurujące audio
-void configureAudio(const char* radioURL);
+void configureAudio(const char* radioURL, int volume);
 
 // Funkcje callback do obsługi audio
 void audio_info(const char *info);

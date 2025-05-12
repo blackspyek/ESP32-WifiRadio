@@ -26,7 +26,6 @@ struct RadioStation {
 };
 extern menuItem menuItems[3];
 extern RadioStation currentRadioStation;
-void saveRadioURL(int radioStationNumber, const String& name, const String& url);
 void loadRadiosFromFlash();
 void saveCurrentRadioStationToFlash(int radioStationNumber);
 int getLastRadioStationFromFlash();
@@ -51,6 +50,9 @@ void tft_clearSongInfo();
 void tft_OpenMenu();
 void tft_CloseMenu();
 void tft_burgerClicked();
+void tft_displayVolume(int volume);
+void tft_drawPlus(int x, int y);
+void tft_drawMinus(int x, int y);
 
 void updateSong(String title, String author);
 
