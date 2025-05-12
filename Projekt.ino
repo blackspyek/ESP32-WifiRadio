@@ -48,7 +48,7 @@ void httpServerTask(void *param) {
     if (client) {
       while (client.connected()) {
         if (client.available()) {
-          handleRequest(client); // Twoja funkcja do obsługi HTTP
+          handleRequest(client); 
           break;
         }
       }
@@ -71,7 +71,6 @@ void setup() {
   int lastVolume = getLastVolumeFromFlash();
   currVolume = lastVolume;
   if (lastStation != -1) {
-    Serial.println("Odczytano ostatnią stację: " + String(lastStation));
     currentRadioStation = {menuItems[lastStation], "", ""};
     configureAudio(currentRadioStation.item.url.c_str(), lastVolume);
   } else {
@@ -101,7 +100,6 @@ void loop() {
     if (tft.getTouch(&touchX, &touchY)) {
       if (!wasTouched) {
         wasTouched = true;
-        Serial.printf("Touch detected at X=%u, Y=%u\n", touchX, touchY);
 
         // 1) Hard-coded burger button in the corner
         if (touchX >= 285 && touchX <= 325 &&
@@ -131,7 +129,6 @@ void loop() {
             int rectX = i * (rectWidth + spacing);
             if (touchX >= rectX && touchX <  rectX + rectWidth &&
                 touchY >= rectY && touchY <  rectY + rectHeight) {
-              Serial.printf("Menu item %d touched\n", i);
               changeRadioStation(i);
               break;
             }

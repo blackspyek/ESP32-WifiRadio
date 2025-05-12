@@ -26,7 +26,7 @@ void saveRadioURL(int radioStationNumber, const String& name, const String& url)
 
 void handleRequest(WiFiClient client) {
     String request = client.readStringUntil('\r');
-    client.readStringUntil('\n'); // pozostałość po \n
+    client.readStringUntil('\n'); 
   
     if (request.startsWith("GET /?")) {
       int station = -1;

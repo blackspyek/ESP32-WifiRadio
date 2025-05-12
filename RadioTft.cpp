@@ -73,7 +73,6 @@ void tft_printWrapped(const String &text, int x, int y, uint8_t textSize) {
   }
 }
 
-// now your two functions become trivial:
 
 void tft_printTitle(String title) {
   tft_printWrapped(title, 15, 60, 2);
@@ -179,9 +178,7 @@ void showRawRGB888ImageFromURL(const char* url) {
       }
     }
     
-    Serial.println("Image displayed successfully");
   } else {
-    //TODO default image
     Serial.print("HTTP error: ");
     Serial.println(httpCode);
   }
@@ -206,7 +203,6 @@ void tft_drawMenuScreen() {
   for (int i = 0; i < numItems; i++) {
     int rectX = i * (rectWidth + spacing);
 
-    // Draw rectangle
     tft.fillRect(rectX, rectY, rectWidth, rectHeight, TEXT_COLOR);
 
     // Center text in box

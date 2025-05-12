@@ -28,8 +28,8 @@ void connectToWiFi() {
   }
 
   wm.setConfigPortalTimeout(120);   // portal gaśnie po 2 min braku aktywności
-  tft_printWrapped("Podłącz się pod AP...", 10, 50, 2);
-  tft_printWrapped("Wybierz sieć Wi-Fi...", 10, 100, 2);
+  tft_printWrapped("Podlacz się pod AP...", 10, 50, 2);
+  tft_printWrapped("Wybierz siec Wi-Fi...", 10, 100, 2);
   
   Serial.println(F("📡 Łączenie... (portal, jeśli brak kredencji)"));
   bool ok = wm.autoConnect(PORTAL_SSID, PORTAL_PASS);
@@ -48,7 +48,6 @@ void connectToWiFi() {
   Serial.printf("✅ Wi-Fi OK: %s  IP: %s\n",
                 WiFi.SSID().c_str(),
                 WiFi.localIP().toString().c_str());
-  // in the bottom right corner display the IP address
   tft.setTextColor(TEXT_COLOR, BG_COLOR);
   tft.setTextSize(1);
   tft.drawString(WiFi.localIP().toString(), tft.width() - 100, tft.height() - 30);

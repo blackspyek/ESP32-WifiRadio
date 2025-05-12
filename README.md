@@ -1,16 +1,68 @@
+# ESP32 WiFi Radio 🎵
 
-# ESP32-WifiRadio
+An ESP32-based internet radio project that streams audio from online radio stations and displays information on a TFT screen. The project also includes touch functionality and volume control.
 
-## Prerequisites
+## 🚀 Features
 
-Before running this project, make sure you have the following installed on your system:
+- **Internet Radio Streaming**: Play audio streams from online radio stations.
+- **TFT Display**: Display station names, song titles, and other information.
+- **Touch Controls**: Adjust volume and navigate through the interface using touch.
+- **WiFi Manager**: Easily configure WiFi credentials via a web portal.
 
-### 1. **Partition Scheme Huge App (3MB No Ota/1MB SPIFFS)** 
-   - ![image](https://github.com/user-attachments/assets/d275e473-3e01-4ba7-8bc0-8f9d7387a412)
+## 🛠️ Prerequisites
 
-### 2. **ESP32-audioI2S**
-   - [ESP32-audioI2S 3.0.8](https://github.com/schreibfaul1/ESP32-audioI2S/tree/3.0.8)
-   - 3.0.8 Works with inferior versions of ESP so its important
+Before running this project, ensure you have the following installed and configured:
+
+### 1. **Partition Scheme**
+
+- Use the **Huge App (3MB No OTA/1MB SPIFFS)** partition scheme in the Arduino IDE.
+- ![Partition Scheme](https://github.com/user-attachments/assets/d275e473-3e01-4ba7-8bc0-8f9d7387a412)
+
+### 2. **Required Libraries**
+
+Install the following libraries via the Arduino Library Manager or their respective GitHub repositories:
+
+- **[ESP32-audioI2S (v3.0.8)](https://github.com/schreibfaul1/ESP32-audioI2S/tree/3.0.8)**  
+  Ensure you use version 3.0.8 for compatibility with the ESP32.
+
+- **[WiFiManager](https://github.com/tzapu/WiFiManager)**  
+  Simplifies WiFi configuration by providing a web portal.
+
+- **[TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)**  
+  For handling the TFT display.
+
 ### 3. **Secrets.h**
-   - Create Secrets.h file based on Secrets.example
-   - Change config to your own network
+
+- Create a `Secrets.h` file based on `Secrets.example`.
+- Add your WiFi credentials and other configuration details.
+
+## 🔧 Hardware Setup
+
+### Required Components:
+
+- **ESP32 Dev Module**
+- **TFT Display** (compatible with the `TFT_eSPI` library)
+- **I2S DAC** (for audio output)
+
+### Pin Connections:
+
+| **Component**         | **ESP32 Pin** |
+| --------------------- | ------------- |
+| **I2S LCK**           | GPIO 25       |
+| **I2S DIN**           | GPIO 27       |
+| **TFT Display CS**    | GPIO 5        |
+| **TFT Display RESET** | GPIO 17       |
+| **TFT Display DC**    | GPIO 16       |
+| **TFT Display MOSI**  | GPIO 23       |
+| **TFT Display SCK**   | GPIO 18       |
+| **TFT Display T_CLK** | GPIO 18       |
+| **TFT Display T_CS**  | GPIO 4        |
+| **TFT Display T_DIN** | GPIO 23       |
+| **TFT Display T_OUT** | GPIO 19       |
+| **Touch IRQ Pin**     | GPIO 35       |
+
+### 📸 Hardware Setup Example:
+
+Below is an example of how the hardware should be connected:
+
+![Hardware Setup Example](https://github.com/user-attachments/assets/example-hardware-setup.png)
